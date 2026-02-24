@@ -1,5 +1,4 @@
-# 🛍️ Vendora
-
+# 🛍️ Vendora -  A Flask-based multi-vendor marketplace system under active development.
 Vendora is a scalable multi-vendor marketplace web application built using Flask and MySQL.  
 It is designed with modular backend architecture and seller intelligence capabilities.
 
