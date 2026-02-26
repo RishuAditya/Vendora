@@ -23,23 +23,23 @@ db.init_app(app)
 login_manager.init_app(app)
 login_manager.login_view = "login"
 
-# Import models AFTER db initialization
-from backend.models.user_model import User
 
-
+# ---------------- HOME ----------------
 @app.route('/')
 def home():
     return render_template('index.html')
 
 
+# ---------------- REGISTER ----------------
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
         name = request.form.get('name')
         email = request.form.get('email')
         password = generate_password_hash(request.form.get('password'))
+        role = request.form.get('role')
 
-        user = User(name=name, email=email, password=password)
+        user = User(name=name, email=email, password=password, role=role)
         db.session.add(user)
         db.session.commit()
 
@@ -48,6 +48,8 @@ def register():
 
     return render_template('register.html')
 
+
+# ---------------- LOGIN ----------------
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -58,23 +60,48 @@ def login():
 
         if user and check_password_hash(user.password, password):
             login_user(user)
-            return redirect(url_for('dashboard'))
+
+            # Role-based redirect
+            if user.role == "admin":
+                return redirect(url_for('admin_dashboard'))
+            elif user.role == "seller":
+                return redirect(url_for('seller_dashboard'))
+            else:
+                return redirect(url_for('customer_dashboard'))
 
         flash("Invalid credentials")
 
     return render_template('login.html')
 
-@app.route('/dashboard')
+
+# ---------------- DASHBOARDS ----------------
+@app.route('/admin')
 @login_required
-def dashboard():
-    # return f"Welcome {current_user.name}! Role: {current_user.role}"
-    return render_template("dashboard.html")
+def admin_dashboard():
+    return f"Admin Dashboard - Welcome {current_user.name}"
+
+
+@app.route('/seller')
+@login_required
+def seller_dashboard():
+    return f"Seller Dashboard - Welcome {current_user.name}"
+
+
+@app.route('/customer')
+@login_required
+def customer_dashboard():
+    return f"Customer Dashboard - Welcome {current_user.name}"
+
+
+# ---------------- LOGOUT ----------------
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
     return redirect(url_for('login'))
 
+
+# ---------------- USER LOADER ----------------
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
