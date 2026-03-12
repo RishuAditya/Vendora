@@ -1,0 +1,30 @@
+<h2>Seller Orders</h2>
+
+<table border="1">
+  <tr>
+    <th>Product</th>
+    <th>Quantity</th>
+    <th>Status</th>
+    <th>Update</th>
+  </tr>
+
+  {% for order in orders %}
+
+  <tr>
+    <td>{{ order.product }}</td>
+    <td>{{ order.quantity }}</td>
+    <td>{{ order.status }}</td>
+
+    <td>
+      <a href="/seller/update-order/{{ order.id }}/Shipped">
+        <button>Ship</button>
+      </a>
+
+      <a href="/seller/update-order/{{ order.id }}/Delivered">
+        <button>Deliver</button>
+      </a>
+    </td>
+  </tr>
+
+  {% endfor %}
+</table>

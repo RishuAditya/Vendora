@@ -1,9 +1,8 @@
 from backend.extensions import db
 
+class Cart(db.Model):
 
-class Order(db.Model):
-
-    __tablename__ = "orders"
+    __tablename__ = "cart"
 
     id = db.Column(db.Integer, primary_key=True)
 
@@ -11,6 +10,4 @@ class Order(db.Model):
 
     product_id = db.Column(db.Integer, db.ForeignKey("products.id"))
 
-    quantity = db.Column(db.Integer)
-
-    status = db.Column(db.String(50), default="Pending")
+    quantity = db.Column(db.Integer, default=1)

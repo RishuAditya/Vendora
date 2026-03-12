@@ -1,0 +1,21 @@
+<h2>Your Products</h2>
+
+<a href="/seller/add-product">Add Product</a>
+
+<hr />
+
+{% for product in products %}
+
+<div>
+  <img src="/static/images/products/{{ product.image }}" width="120" />
+
+  <p>
+    Name : {{ product.name }} <br />
+    Price : ₹{{ product.price }} <br />
+    Stock : {{ product.stock }}
+  </p>
+</div>
+
+<hr />
+
+{% endfor %}
