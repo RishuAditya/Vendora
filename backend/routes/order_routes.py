@@ -32,11 +32,14 @@ def checkout():
     return redirect("/orders")
 
 # -----  Oders view pages..
+from flask import render_template
+from flask_login import login_required, current_user
+from backend.models.order_model import Order
+from backend.models.product_model import Product
+
 @order_bp.route("/orders")
 @login_required
-def view_orders():
-
-    from backend.models.product_model import Product
+def my_orders():
 
     orders = Order.query.filter_by(user_id=current_user.id).all()
 
@@ -48,7 +51,7 @@ def view_orders():
 
         if product:
             order_data.append({
-                "name": product.name,
+                "product_name": product.name,
                 "price": product.price,
                 "quantity": order.quantity,
                 "status": order.status
@@ -88,7 +91,7 @@ def seller_orders():
 
     return render_template("seller/orders.html", orders=orders_data)
 
-#---- Order Status
+#---- Order Status ----------------------
 
 @order_bp.route("/seller/update-order/<int:order_id>/<status>")
 @login_required
@@ -104,3 +107,6 @@ def update_order(order_id, status):
     db.session.commit()
 
     return redirect("/seller/orders")
+
+# -- My oder
+
