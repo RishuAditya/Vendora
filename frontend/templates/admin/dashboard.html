@@ -1,0 +1,61 @@
+<!-- <h2>Admin Dashboard</h2>
+
+<table border="1">
+  <tr>
+    <th>Data</th>
+    <th>Total</th>
+  </tr>
+
+  <tr>
+    <td>Total Users</td>
+    <td>{{ users }}</td>
+  </tr>
+
+  <tr>
+    <td>Total Sellers</td>
+    <td>{{ sellers }}</td>
+  </tr>
+
+  <tr>
+    <td>Total Products</td>
+    <td>{{ products }}</td>
+  </tr>
+
+  <tr>
+    <td>Total Orders</td>
+    <td>{{ orders }}</td>
+  </tr>
+</table> -->
+
+{% extends "layout.html" %} {% block content %}
+
+<h2>Admin Dashboard</h2>
+
+<table border="1">
+  <tr>
+    <th>Data</th>
+    <th>Total</th>
+  </tr>
+
+  <tr>
+    <td>Total Users</td>
+    <td>{{ total_users }}</td>
+  </tr>
+
+  <tr>
+    <td>Total Sellers</td>
+    <td>{{ total_sellers }}</td>
+  </tr>
+
+  <tr>
+    <td>Total Products</td>
+    <td>{{ total_products }}</td>
+  </tr>
+
+  <tr>
+    <td>Total Orders</td>
+    <td>{{ total_orders }}</td>
+  </tr>
+</table>
+
+{% endblock %}

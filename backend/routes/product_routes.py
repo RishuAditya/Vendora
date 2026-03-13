@@ -3,6 +3,7 @@ from flask_login import login_required, current_user
 
 from backend.extensions import db
 from backend.models.product_model import Product
+from backend.models.category_model import Category
 from backend.models.seller_model import Seller
 
 product_bp = Blueprint("product", __name__)
@@ -18,11 +19,13 @@ def add_product():
 
     seller = Seller.query.filter_by(user_id=current_user.id).first()
 
-    # अगर seller record नहीं है तो बना दो
     if not seller:
         seller = Seller(user_id=current_user.id, company_name="My Store")
         db.session.add(seller)
         db.session.commit()
+
+    # ---- FETCH CATEGORIES ----
+    categories = Category.query.all()
 
     if request.method == "POST":
 
@@ -30,13 +33,15 @@ def add_product():
         price = request.form["price"]
         stock = request.form["stock"]
         image = request.form["image"]
+        category_id = request.form.get("category_id")
 
         product = Product(
             seller_id=seller.id,
             name=name,
             price=price,
             stock=stock,
-            image=image
+            image=image,
+            category_id=category_id
         )
 
         db.session.add(product)
@@ -44,7 +49,10 @@ def add_product():
 
         return redirect("/seller/products")
 
-    return render_template("seller/add_product.html")
+    return render_template(
+        "seller/add_product.html",
+        categories=categories
+    )
 
 
 # ---------------- SELLER PRODUCT LIST ----------------
@@ -62,13 +70,43 @@ def seller_products():
     return render_template("seller/manage_products.html", products=products)
 
 
-# ---------------- CUSTOMER PRODUCT VIEW ----------------
+# ---------------- MARKETPLACE + SEARCH + FILTER + REVIEW ----------------
 @product_bp.route("/products")
-def view_products():
+def products():
 
-    products = Product.query.all()
+    search = request.args.get("search")
+    category_id = request.args.get("category")
+    min_price = request.args.get("min_price")
+    max_price = request.args.get("max_price")
 
-    return render_template("customer/products.html", products=products)
+    query = Product.query
+
+    if search:
+        query = query.filter(Product.name.ilike(f"%{search}%"))
+
+    if category_id:
+        query = query.filter(Product.category_id == category_id)
+
+    if min_price:
+        query = query.filter(Product.price >= min_price)
+
+    if max_price:
+        query = query.filter(Product.price <= max_price)
+
+    products = query.all()
+
+    from backend.models.review_model import Review
+    reviews = Review.query.all()
+
+    categories = Category.query.all()
+
+    return render_template(
+        "customer/products.html",
+        products=products,
+        reviews=reviews,
+        categories=categories
+    )
+
 
 # ---------------- ADD TO CART ----------------
 @product_bp.route("/add-to-cart/<int:product_id>")
@@ -84,6 +122,84 @@ def add_to_cart(product_id):
     )
 
     db.session.add(cart_item)
+    db.session.commit()
+
+    return redirect("/products")
+
+
+# ---------------- ADD TO WISHLIST ----------------
+@product_bp.route("/add-to-wishlist/<int:product_id>")
+@login_required
+def add_to_wishlist(product_id):
+
+    from backend.models.wishlist_model import Wishlist
+
+    item = Wishlist(
+        user_id=current_user.id,
+        product_id=product_id
+    )
+
+    db.session.add(item)
+    db.session.commit()
+
+    return redirect("/products")
+
+
+# ---------------- VIEW WISHLIST ----------------
+@product_bp.route("/wishlist")
+@login_required
+def view_wishlist():
+
+    from backend.models.wishlist_model import Wishlist
+
+    items = Wishlist.query.filter_by(user_id=current_user.id).all()
+
+    products = []
+
+    for item in items:
+        product = Product.query.get(item.product_id)
+        products.append(product)
+
+    return render_template("customer/wishlist.html", products=products)
+
+
+# ---------------- REMOVE FROM WISHLIST ----------------
+@product_bp.route("/remove-from-wishlist/<int:product_id>")
+@login_required
+def remove_from_wishlist(product_id):
+
+    from backend.models.wishlist_model import Wishlist
+
+    item = Wishlist.query.filter_by(
+        user_id=current_user.id,
+        product_id=product_id
+    ).first()
+
+    if item:
+        db.session.delete(item)
+        db.session.commit()
+
+    return redirect("/wishlist")
+
+
+# ---------------- ADD REVIEW ----------------
+@product_bp.route("/add-review/<int:product_id>", methods=["POST"])
+@login_required
+def add_review(product_id):
+
+    from backend.models.review_model import Review
+
+    rating = request.form["rating"]
+    comment = request.form["comment"]
+
+    review = Review(
+        user_id=current_user.id,
+        product_id=product_id,
+        rating=rating,
+        comment=comment
+    )
+
+    db.session.add(review)
     db.session.commit()
 
     return redirect("/products")

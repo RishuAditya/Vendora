@@ -1,0 +1,19 @@
+<h2>My Wishlist</h2>
+
+<div style="display: flex; gap: 20px; flex-wrap: wrap">
+  {% for product in products %}
+
+  <div style="border: 1px solid #ccc; padding: 10px; width: 200px">
+    <img src="/static/images/products/{{ product.image }}" width="180" />
+
+    <h3>{{ product.name }}</h3>
+
+    <p>₹ {{ product.price }}</p>
+  </div>
+
+  <a href="/remove-from-wishlist/{{ product.id }}">
+    <button>❌ Remove</button>
+  </a>
+
+  {% endfor %}
+</div>

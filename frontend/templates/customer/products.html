@@ -1,19 +1,115 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
 <h2>Marketplace</h2>
 
-<div style="display: flex; gap: 20px; flex-wrap: wrap">
-  {% for product in products %}
+<!-- SEARCH + CATEGORY + PRICE FILTER -->
+<form method="GET" action="/products" style="margin-bottom:20px; display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
 
-  <div style="border: 1px solid #ccc; padding: 10px; width: 200px">
-    <img src="/static/images/products/{{ product.image }}" width="180" />
+  <input
+    type="text"
+    name="search"
+    placeholder="Search product"
+    value="{{ request.args.get('search','') }}"
+  >
+
+  <select name="category">
+    <option value="">All Categories</option>
+    {% for cat in categories %}
+    <option value="{{ cat.id }}"
+      {% if request.args.get('category') == cat.id|string %}
+      selected
+      {% endif %}
+    >
+      {{ cat.name }}
+    </option>
+    {% endfor %}
+  </select>
+
+  <input
+    type="number"
+    name="min_price"
+    placeholder="Min Price"
+    value="{{ request.args.get('min_price','') }}"
+  >
+
+  <input
+    type="number"
+    name="max_price"
+    placeholder="Max Price"
+    value="{{ request.args.get('max_price','') }}"
+  >
+
+  <button type="submit">Filter</button>
+</form>
+
+<hr>
+
+<!-- PRODUCT GRID -->
+<div style="display:flex; gap:20px; flex-wrap:wrap;">
+
+{% if products|length == 0 %}
+  <p>No products found</p>
+{% endif %}
+
+{% for product in products %}
+  <div style="border:1px solid #ccc; padding:10px; width:220px; display:flex; flex-direction:column; align-items:center;">
+
+    <img src="/static/images/products/{{ product.image }}" width="180" style="margin-bottom:10px;">
 
     <h3>{{ product.name }}</h3>
 
     <p>₹ {{ product.price }}</p>
 
-    <a href="/add-to-cart/{{ product.id }}">
-      <button>Add To Cart</button>
-    </a>
-  </div>
+    <p>Category : {{ product.category.name }}</p>
 
-  {% endfor %}
+    <!-- ADD TO CART & WISHLIST -->
+    <div style="margin:5px 0;">
+      <a href="/add-to-cart/{{ product.id }}">
+        <button>Add To Cart</button>
+      </a>
+      <a href="/add-to-wishlist/{{ product.id }}">
+        <button>❤️ Wishlist</button>
+      </a>
+    </div>
+
+    <!-- ADD REVIEW -->
+    <form method="POST" action="/add-review/{{ product.id }}" style="margin-top:10px; display:flex; flex-direction:column; gap:5px; width:100%;">
+      <select name="rating" required>
+        <option value="5">⭐⭐⭐⭐⭐</option>
+        <option value="4">⭐⭐⭐⭐</option>
+        <option value="3">⭐⭐⭐</option>
+        <option value="2">⭐⭐</option>
+        <option value="1">⭐</option>
+      </select>
+
+      <input
+        type="text"
+        name="comment"
+        placeholder="Write review"
+        required
+      >
+
+      <button type="submit">Submit Review</button>
+    </form>
+
+    <!-- SHOW REVIEWS -->
+    <div style="margin-top:10px; width:100%;">
+      <h4>Reviews</h4>
+      {% for r in reviews %}
+        {% if r.product_id == product.id %}
+          <p>
+            ⭐ {{ r.rating }} <br>
+            {{ r.comment }}
+          </p>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+  </div>
+{% endfor %}
+
 </div>
+
+{% endblock %}

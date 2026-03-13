@@ -1,5 +1,6 @@
 import os
 from flask import Flask, render_template
+from flask import render_template
 from flask_login import login_required, current_user
 
 from backend.extensions import db, login_manager
@@ -12,6 +13,9 @@ from backend.models.seller_model import Seller
 from backend.models.product_model import Product
 from backend.models.cart_model import Cart
 from backend.routes.cart_routes import cart_bp
+from backend.routes.admin_routes import admin_bp
+
+from backend.routes.seller_routes import seller_bp
 
 base_dir = os.path.abspath(os.path.dirname(__file__))
 
@@ -36,6 +40,9 @@ app.register_blueprint(auth_bp)
 app.register_blueprint(product_bp)
 app.register_blueprint(cart_bp)
 app.register_blueprint(order_bp)
+app.register_blueprint(seller_bp)
+app.register_blueprint(admin_bp)
+
 
 # ---------------- HOME ----------------
 @app.route("/")
@@ -49,8 +56,18 @@ def home():
 def admin_dashboard():
     if current_user.role != "admin":
         return "Access Denied"
-    return f"Admin Dashboard - Welcome {current_user.name}"
+    total_users = User.query.count()
+    total_sellers = Seller.query.count()
+    total_products = Product.query.count()
+    total_orders = Order.query.count()
 
+    return render_template(
+        "admin/dashboard.html",
+        users=total_users,
+        sellers=total_sellers,
+        products=total_products,
+        orders=total_orders
+    )
 
 @app.route("/seller")
 @login_required

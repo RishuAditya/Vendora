@@ -1,21 +1,17 @@
-<h2>Your Products</h2>
-
-<a href="/seller/add-product">Add Product</a>
-
-<hr />
+<h2>My Products</h2>
 
 {% for product in products %}
 
-<div>
-  <img src="/static/images/products/{{ product.image }}" width="120" />
+<div style="border: 1px solid #ccc; padding: 15px; margin: 10px; width: 300px">
+  <img src="/static/images/products/{{ product.image }}" width="200" />
 
-  <p>
-    Name : {{ product.name }} <br />
-    Price : ₹{{ product.price }} <br />
-    Stock : {{ product.stock }}
-  </p>
+  <h3>{{ product.name }}</h3>
+
+  <p>Price : ₹{{ product.price }}</p>
+
+  <p>Stock : {{ product.stock }}</p>
+
+  <p>Category : {{ product.category.name }}</p>
 </div>
-
-<hr />
 
 {% endfor %}

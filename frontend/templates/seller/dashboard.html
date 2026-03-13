@@ -1,0 +1,24 @@
+{% extends "layout.html" %} {% block content %}
+
+<h2>Seller Dashboard</h2>
+
+<div style="display: flex; gap: 30px; margin-top: 20px">
+  <div style="border: 1px solid #ccc; padding: 20px; width: 200px">
+    <h3>Total Products</h3>
+    <p>{{ total_products }}</p>
+  </div>
+</div>
+
+<div style="border:1px solid #ccc; padding:20px; width:200px">
+<h3>Total Orders</h3>
+<p>{{ total_orders }}</p>
+</div>
+
+<div style="border:1px solid #ccc; padding:20px; width:200px">
+<h3>Total Revenue</h3>
+<p>₹ {{ total_revenue }}</p>
+</div>
+
+</div>
+
+{% endblock %}

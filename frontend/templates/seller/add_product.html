@@ -13,5 +13,16 @@
   Image Name (example: phone.png) <br />
   <input type="text" name="image" /><br /><br />
 
+  <label>Category</label>
+
+  <select name="category_id" required>
+    {% for cat in categories %}
+
+    <option value="{{ cat.id }}">{{ cat.name }}</option>
+
+    {% endfor %}
+  </select>
+  <br /><br />
+
   <button type="submit">Add Product</button>
 </form>
