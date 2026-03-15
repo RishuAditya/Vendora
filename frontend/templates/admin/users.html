@@ -1,0 +1,28 @@
+<h2>Admin - All Users</h2>
+
+<table border="1">
+  <tr>
+    <th>ID</th>
+    <th>Name</th>
+    <th>Email</th>
+    <th>Action</th>
+  </tr>
+
+  {% for user in users %}
+
+  <tr>
+    <td>{{ user.id }}</td>
+
+    <td>{{ user.name }}</td>
+
+    <td>{{ user.email }}</td>
+
+    <td>
+      <a href="/admin/ban-user/{{ user.id }}">
+        <button>Ban User</button>
+      </a>
+    </td>
+  </tr>
+
+  {% endfor %}
+</table>

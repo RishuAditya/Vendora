@@ -1,0 +1,16 @@
+<h2>Product Detail</h2>
+
+<img
+  src="{{ url_for('static', filename='images/products/' + product.image) }}"
+  width="200"
+/>
+
+<h3>{{ product.name }}</h3>
+
+<p>Price: ₹{{ product.price }}</p>
+
+<p>Stock: {{ product.stock }}</p>
+
+<a href="/add-to-cart/{{ product.id }}">
+  <button>Add To Cart</button>
+</a>

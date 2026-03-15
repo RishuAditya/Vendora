@@ -23,12 +23,15 @@ app = Flask(
     __name__,
     template_folder=os.path.join(base_dir, "../frontend/templates"),
     static_folder=os.path.join(base_dir, "../frontend/static"),
+    
 )
 
 # Config
 app.config["SECRET_KEY"] = "mysecret"
 app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://root:Rishu1309@localhost/vendora"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+app.config["SECRET_KEY"] = "vendora_secret"
+app.config["UPLOAD_FOLDER"] = "frontend/static/images/products"
 
 # Init extensions
 db.init_app(app)

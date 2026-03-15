@@ -1,10 +1,13 @@
-from flask import Blueprint, render_template, request, redirect
+import os
+from flask import Blueprint, current_app, render_template, request, redirect
 from flask_login import login_required, current_user
 
 from backend.extensions import db
 from backend.models.product_model import Product
 from backend.models.category_model import Category
 from backend.models.seller_model import Seller
+from werkzeug.utils import secure_filename
+
 
 product_bp = Blueprint("product", __name__)
 
@@ -32,15 +35,26 @@ def add_product():
         name = request.form["name"]
         price = request.form["price"]
         stock = request.form["stock"]
-        image = request.form["image"]
         category_id = request.form.get("category_id")
 
+        # -------- IMAGE UPLOAD --------
+        image_file = request.files["image"]
+
+        filename = secure_filename(image_file.filename)
+
+        upload_path = os.path.join(
+            current_app.config["UPLOAD_FOLDER"], filename
+        )
+
+        image_file.save(upload_path)
+
+        # -------- SAVE PRODUCT --------
         product = Product(
             seller_id=seller.id,
             name=name,
             price=price,
             stock=stock,
-            image=image,
+            image=filename,
             category_id=category_id
         )
 
@@ -203,3 +217,31 @@ def add_review(product_id):
     db.session.commit()
 
     return redirect("/products")
+
+# -- Product Detail Route ----
+
+# @product_bp.route("/product/<int:product_id>")
+# def product_detail(product_id):
+
+#     from backend.extensions import mysql
+
+#     cursor = mysql.connection.cursor()
+
+#     cursor.execute("SELECT * FROM products WHERE id=%s", (product_id,))
+#     product = cursor.fetchone()
+
+#     return render_template(
+#         "customer/product_detail.html",
+#         product=product
+#     )
+
+
+@product_bp.route("/product/<int:product_id>")
+def product_detail(product_id):
+
+    product = Product.query.get(product_id)
+
+    return render_template(
+        "customer/product_detail.html",
+        product=product
+    )
