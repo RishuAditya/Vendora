@@ -14,3 +14,5 @@ class Order(db.Model):
     quantity = db.Column(db.Integer)
 
     status = db.Column(db.String(50), default="Pending")
+
+    refund_status = db.Column(db.String(50), default="None")

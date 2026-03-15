@@ -40,9 +40,29 @@ def seller_dashboard():
         if product:
             total_revenue += product.price * order.quantity
 
+    # -------- BEST SELLING PRODUCT --------
+    best_product = None
+    best_sales = 0
+
+    for product in products:
+        sales = Order.query.filter_by(product_id=product.id).count()
+
+        if sales > best_sales:
+            best_sales = sales
+            best_product = product.name
+
+    # -------- LOW STOCK ALERT --------
+    low_stock = []
+
+    for product in products:
+        if product.stock < 5:
+            low_stock.append(product)
+
     return render_template(
         "seller/dashboard.html",
         total_products=total_products,
         total_orders=total_orders,
-        total_revenue=total_revenue
+        total_revenue=total_revenue,
+        best_product=best_product,
+        low_stock=low_stock
     )

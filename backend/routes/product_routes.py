@@ -1,6 +1,7 @@
 import os
 from flask import Blueprint, current_app, render_template, request, redirect
 from flask_login import login_required, current_user
+from flask import request, jsonify
 
 from backend.extensions import db
 from backend.models.product_model import Product
@@ -35,6 +36,10 @@ def add_product():
         name = request.form["name"]
         price = request.form["price"]
         stock = request.form["stock"]
+        image = request.form.get("image")
+
+        description = request.form.get("description")
+        specifications = request.form.get("specifications")
         category_id = request.form.get("category_id")
 
         # -------- IMAGE UPLOAD --------
@@ -55,6 +60,8 @@ def add_product():
             price=price,
             stock=stock,
             image=filename,
+            description=description,
+            specifications=specifications,
             category_id=category_id
         )
 
@@ -220,22 +227,6 @@ def add_review(product_id):
 
 # -- Product Detail Route ----
 
-# @product_bp.route("/product/<int:product_id>")
-# def product_detail(product_id):
-
-#     from backend.extensions import mysql
-
-#     cursor = mysql.connection.cursor()
-
-#     cursor.execute("SELECT * FROM products WHERE id=%s", (product_id,))
-#     product = cursor.fetchone()
-
-#     return render_template(
-#         "customer/product_detail.html",
-#         product=product
-#     )
-
-
 @product_bp.route("/product/<int:product_id>")
 def product_detail(product_id):
 
@@ -244,4 +235,38 @@ def product_detail(product_id):
     return render_template(
         "customer/product_detail.html",
         product=product
+    )
+# --- REcent product ---
+@product_bp.route("/recent-products")
+def recent_products():
+
+    ids = request.args.get("ids")
+
+    if not ids:
+        return jsonify([])
+
+    ids_list = ids.split(",")
+
+    products = Product.query.filter(Product.id.in_(ids_list)).all()
+
+    data = []
+
+    for p in products:
+        data.append({
+            "id": p.id,
+            "name": p.name,
+            "price": p.price
+        })
+
+    return jsonify(data)
+
+#-- Trend
+@product_bp.route("/trending-products")
+def trending_products():
+
+    products = Product.query.order_by(Product.views.desc()).limit(5).all()
+
+    return render_template(
+        "customer/trending.html",
+        products=products
     )

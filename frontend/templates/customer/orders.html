@@ -15,6 +15,13 @@
     <td>₹ {{ order.price }}</td>
     <td>{{ order.quantity }}</td>
     <td>{{ order.status }}</td>
+    <a href="/cancel-order/{{ order.id }}">
+      <button>Cancel</button>
+    </a>
+
+    <a href="/return-order/{{ order.id }}">
+      <button>Return</button>
+    </a>
   </tr>
 
   {% endfor %}

@@ -6,10 +6,14 @@
 />
 
 <h3>{{ product.name }}</h3>
-
 <p>Price: ₹{{ product.price }}</p>
-
 <p>Stock: {{ product.stock }}</p>
+
+<h4>Description</h4>
+<p>{{ product.description }}</p>
+
+<h4>Specifications</h4>
+<p>{{ product.specifications }}</p>
 
 <a href="/add-to-cart/{{ product.id }}">
   <button>Add To Cart</button>

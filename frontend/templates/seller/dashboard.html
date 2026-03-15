@@ -9,6 +9,7 @@
   </div>
 </div>
 
+
 <div style="border:1px solid #ccc; padding:20px; width:200px">
 <h3>Total Orders</h3>
 <p>{{ total_orders }}</p>
@@ -19,6 +20,21 @@
 <p>₹ {{ total_revenue }}</p>
 </div>
 
+<a href="/seller/analytics">
+<button>View Analytics</button>
+</a>
+
+<h3>Best Selling Product</h3>
+<p>{{ best_product }}</p>
+
+<h3>Low Stock Products</h3>
+
+<ul>
+{% for p in low_stock %}
+<li>{{ p.name }} (Stock: {{ p.stock }})</li>
+{% endfor %}
+</ul>
 </div>
+
 
 {% endblock %}

@@ -51,11 +51,12 @@ def my_orders():
 
         if product:
             order_data.append({
-                "product_name": product.name,
-                "price": product.price,
-                "quantity": order.quantity,
-                "status": order.status
-            })
+            "id": order.id,
+            "product_name": product.name,
+            "price": product.price,
+            "quantity": order.quantity,
+            "status": order.status
+        })
 
     return render_template("customer/orders.html", orders=order_data)
 
@@ -108,5 +109,41 @@ def update_order(order_id, status):
 
     return redirect("/seller/orders")
 
-# -- My oder
+# -- cancle order
+@order_bp.route("/cancel-order/<int:id>")
+@login_required
+def cancel_order(id):
 
+    order = Order.query.get(id)
+
+    if not order:
+        return "Order not found"
+
+    if order.user_id != current_user.id:
+        return "Unauthorized"
+
+    order.status = "Cancelled"
+
+    db.session.commit()
+
+    return redirect("/orders")
+
+
+#  return  order --
+@order_bp.route("/return-order/<int:id>")
+@login_required
+def return_order(id):
+
+    order = Order.query.get(id)
+
+    if not order:
+        return "Order not found"
+
+    if order.user_id != current_user.id:
+        return "Unauthorized"
+
+    order.status = "Return Requested"
+
+    db.session.commit()
+
+    return redirect("/orders")

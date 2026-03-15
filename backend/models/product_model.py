@@ -17,5 +17,7 @@ class Product(db.Model):
     stock = db.Column(db.Integer)
 
     image = db.Column(db.String(200))
+    description = db.Column(db.Text)
+    specifications = db.Column(db.Text)
 
     category = db.relationship("Category")
